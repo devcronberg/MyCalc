@@ -8,7 +8,11 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        runtime: [win-x64, linux-x64, osx-x64]
     
     steps:
     - name: Checkout code
@@ -29,41 +33,64 @@ jobs:
       run: dotnet test --no-build --configuration Release --verbosity normal
       
     - name: Publish CLI application
-      run: dotnet publish MyCalcCli/MyCalcCli.csproj --configuration Release --output ./publish --no-build
+      run: dotnet publish MyCalcCli/MyCalcCli.csproj --configuration Release --output ./publish-${{ matrix.runtime }} --no-build --self-contained true --runtime ${{ matrix.runtime }}
       
     - name: Create release artifacts
       run: |
         # Create release directory
-        New-Item -ItemType Directory -Force -Path ./release
+        mkdir -p ./release-${{ matrix.runtime }}
         
-        # Copy published files
-        Copy-Item -Path ./publish/* -Destination ./release/ -Recurse
+        # Determine executable name based on runtime
+        if [[ "${{ matrix.runtime }}" == win-* ]]; then
+          EXE_NAME="MyCalcCli.exe"
+          SCRIPT_EXT=".ps1"
+          SCRIPT_CONTENT="# MyCalc - .NET Calculator
+        Write-Host \"Starting MyCalc Calculator...\" -ForegroundColor Green
+        Write-Host \"\"
+        .\MyCalcCli.exe"
+        else
+          EXE_NAME="MyCalcCli"
+          SCRIPT_EXT=".sh"
+          SCRIPT_CONTENT="#!/bin/bash
+        # MyCalc - .NET Calculator
+        echo \"Starting MyCalc Calculator...\"
+        echo \"\"
+        ./MyCalcCli"
+        fi
         
-        # Copy additional files
-        Copy-Item -Path ./README.md -Destination ./release/
-        Copy-Item -Path ./run.ps1 -Destination ./release/
+        # Copy essential runtime files
+        cp ./publish-${{ matrix.runtime }}/$EXE_NAME ./release-${{ matrix.runtime }}/
+        cp ./publish-${{ matrix.runtime }}/MyCalcCore.dll ./release-${{ matrix.runtime }}/
+        cp ./publish-${{ matrix.runtime }}/Spectre.Console.dll ./release-${{ matrix.runtime }}/
         
-        # Create a simple run script for the published version
-        @"
-        # MyCalc Standalone Runner
-        Write-Host "Starting MyCalc..." -ForegroundColor Green
-        .\MyCalcCli.exe
-        "@ | Out-File -FilePath ./release/run-standalone.ps1 -Encoding UTF8
+        # Copy documentation
+        cp ./README.md ./release-${{ matrix.runtime }}/
+        
+        # Create platform-specific run script
+        echo "$SCRIPT_CONTENT" > ./release-${{ matrix.runtime }}/Start-MyCalc$SCRIPT_EXT
+        
+        # Make scripts executable on Unix platforms
+        if [[ "${{ matrix.runtime }}" != win-* ]]; then
+          chmod +x ./release-${{ matrix.runtime }}/MyCalcCli
+          chmod +x ./release-${{ matrix.runtime }}/Start-MyCalc.sh
+        fi
         
     - name: Archive release artifacts
       run: |
-        Compress-Archive -Path ./release/* -DestinationPath ./MyCalc-Release.zip
+        cd ./release-${{ matrix.runtime }}
+        if [[ "${{ matrix.runtime }}" == win-* ]]; then
+          # Use PowerShell on Windows-compatible systems, but we're on Linux so use zip
+          zip -r ../MyCalc-${{ matrix.runtime }}.zip .
+        else
+          tar -czf ../MyCalc-${{ matrix.runtime }}.tar.gz .
+        fi
+        cd ..
         
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: MyCalc-Release
-        path: ./MyCalc-Release.zip
-        retention-days: 90
-        
-    - name: Upload individual files
-      uses: actions/upload-artifact@v4
-      with:
-        name: MyCalc-Files
-        path: ./release/
+        name: MyCalc-${{ matrix.runtime }}
+        path: |
+          ./MyCalc-${{ matrix.runtime }}.zip
+          ./MyCalc-${{ matrix.runtime }}.tar.gz
         retention-days: 90
