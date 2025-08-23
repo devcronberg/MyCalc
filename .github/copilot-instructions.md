@@ -28,6 +28,7 @@ This is a production-ready .NET 8.0 calculator solution with a layered architect
 - **Attributes System**: `MyCalcCore/Attributes/` contains discovery and categorization attributes
 - **Two-Level Menu**: Category selection → Operation selection → Parameter input
 - **International Input**: Handles both `.` and `,` decimal separators automatically
+- **Structured Logging**: Serilog-based logging with configurable console output and global exception handling
 
 ## Development Workflows
 
@@ -140,8 +141,46 @@ public class Statistics
 - Implicit usings enabled
 - xUnit 2.5.3 for testing with Theory/InlineData support
 - Spectre.Console 0.50.0 for interactive CLI menus
+- Serilog 4.1.0 for structured logging with console sink
+- Microsoft.Extensions.Configuration.Json for appsettings.json support
 - Custom reflection-based operation discovery system
 - GitHub Actions for automated cross-platform builds
+
+## Logging System
+
+MyCalc implements comprehensive structured logging using Serilog:
+
+### Configuration
+- **Location**: `appsettings.json` in both CLI and Core projects
+- **Format**: `[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}`
+- **Default Level**: Information with Debug available for troubleshooting
+- **Sink**: Console only (no files or remote endpoints)
+
+### Usage Guidelines
+- **Information**: Normal application flow (startup, operation selections, results)
+- **Debug**: Detailed troubleshooting (parameter parsing, configuration loading)
+- **Warning**: Recoverable issues (API retries, invalid input)
+- **Error**: Operation failures with full exception details
+- **Fatal**: Application-level crashes with stack traces
+
+### Logging Points
+- **CLI**: Application lifecycle, user interactions, operation results, errors
+- **Core**: Operation execution, API calls, configuration loading, retry logic
+- **Global**: Unhandled exceptions caught and logged before shutdown
+
+### Customization
+```json
+{
+    "Serilog": {
+        "MinimumLevel": {
+            "Default": "Information",
+            "Override": {
+                "MyCalcCore": "Debug"  // Enable debug for Core operations
+            }
+        }
+    }
+}
+```
 
 ## CI/CD Pipeline Details
 - **Trigger**: Push to main branch or pull requests

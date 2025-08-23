@@ -196,6 +196,54 @@ The GitHub Actions workflow automatically creates platform-specific builds:
 - **Precision**: Uses `decimal` type for financial-grade accuracy
 - **Culture**: InvariantCulture for consistent worldwide behavior
 - **Input Handling**: Accepts both `.` and `,` as decimal separators
+- **Logging**: Serilog structured logging with configurable console output
+
+### Logging System
+
+MyCalc uses **Serilog** for structured logging throughout both the CLI and Core projects:
+
+**Features:**
+- Console output with timestamp, log level, and structured data
+- Configurable via `appsettings.json` - no hard-coded settings
+- Comprehensive error logging with stack traces
+- Debug-level logging for troubleshooting
+- Global exception handling for unhandled errors
+
+**Log Output Format:**
+```
+[14:23:15 INF] MyCalc CLI application starting {}
+[14:23:15 INF] Loaded 8 operations from 3 categories {}
+[14:23:16 INF] User selected operation 'Add' from category 'Basic Arithmetic' {}
+[14:23:18 INF] Operation 'Add' completed successfully with result: 15.5 {}
+```
+
+**Configuration in appsettings.json:**
+```json
+{
+    "Serilog": {
+        "MinimumLevel": {
+            "Default": "Information",
+            "Override": {
+                "Microsoft": "Warning",
+                "System": "Warning"
+            }
+        },
+        "WriteTo": [
+            {
+                "Name": "Console",
+                "Args": {
+                    "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"
+                }
+            }
+        ]
+    }
+}
+```
+
+**Customizing Log Levels:**
+- Change `"Default"` from `"Information"` to `"Debug"` for detailed troubleshooting
+- Set individual components like `"MyCalcCore": "Debug"` for focused debugging
+- Use `"Warning"` or `"Error"` to reduce output volume
 
 ## Development
 
