@@ -1,23 +1,29 @@
 using MyCalcCore.Operations;
+using Serilog;
 
 class TestFinancial
 {
     static void Main()
     {
+        // Initialize Serilog for test
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .MinimumLevel.Debug()
+            .CreateLogger();
+
         try
         {
-            Console.WriteLine("Testing Bitcoin price directly...");
+            Log.Information("Testing Bitcoin price directly...");
             var price = Financial.GetBitcoinPrice();
-            Console.WriteLine($"Bitcoin price: ${price}");
+            Log.Information("Bitcoin price: ${Price:F2}", price);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: {ex.Message}");
-            Console.WriteLine($"Stack trace: {ex.StackTrace}");
-            if (ex.InnerException != null)
-            {
-                Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
-            }
+            Log.Error(ex, "Error occurred while testing Bitcoin price");
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
     }
 }

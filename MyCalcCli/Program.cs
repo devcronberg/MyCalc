@@ -1,15 +1,44 @@
 ﻿using System.Globalization;
 using MyCalcCore.Operations;
 using Spectre.Console;
+using Serilog;
+using Microsoft.Extensions.Configuration;
 
-// Set culture to InvariantCulture for consistent decimal parsing worldwide
-// InvariantCulture ensures "." is always decimal separator (not "," in EU locales)
-// This guarantees 5.5 parses as five-and-a-half on Danish, German, French systems
-// InvariantCulture is better than en-US for calculators - pure number focus, no regional assumptions
-Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+// Initialize configuration
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .Build();
 
-var operations = Operation.GetOperations();
+// Initialize Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(configuration)
+    .CreateLogger();
+
+// Add global exception handler
+AppDomain.CurrentDomain.UnhandledException += (sender, eventArgs) =>
+{
+    var exception = (Exception)eventArgs.ExceptionObject;
+    Log.Fatal(exception, "Unhandled exception occurred in MyCalc CLI application");
+    Log.CloseAndFlush();
+};
+
+try
+{
+    Log.Information("MyCalc CLI application starting");
+
+    // Set culture to InvariantCulture for consistent decimal parsing worldwide
+    // InvariantCulture ensures "." is always decimal separator (not "," in EU locales)
+    // This guarantees 5.5 parses as five-and-a-half on Danish, German, French systems
+    // InvariantCulture is better than en-US for calculators - pure number focus, no regional assumptions
+    Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+    Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
+    Log.Debug("Culture set to InvariantCulture for consistent decimal parsing");
+
+    var operations = Operation.GetOperations();
+    Log.Information("Loaded {OperationCount} operations from {CategoryCount} categories",
+        operations.Count, operations.GroupBy(op => op.CategoryName).Count());
 
 // Helper method to get decimal input that handles both '.' and ',' as decimal separators
 static decimal GetDecimalInput(string prompt)
@@ -24,9 +53,11 @@ static decimal GetDecimalInput(string prompt)
 
         if (decimal.TryParse(normalizedInput, NumberStyles.Number, CultureInfo.InvariantCulture, out var result))
         {
+            Log.Debug("Successfully parsed user input '{Input}' as {Value}", input, result);
             return result;
         }
 
+        Log.Debug("Failed to parse user input '{Input}' as decimal", input);
         AnsiConsole.MarkupLine("[red]Invalid number format. Please try again.[/]");
     }
 }
@@ -61,6 +92,7 @@ while (true)
     // Handle exit
     if (categoryChoice == "Exit")
     {
+        Log.Information("User chose to exit application");
         AnsiConsole.MarkupLine("[green]Goodbye![/]");
         break;
     }
@@ -71,6 +103,9 @@ while (true)
     {
         var selectedCategory = categories[selectedCategoryIndex];
         var categoryOperations = selectedCategory.ToList();
+        
+        Log.Information("User selected category '{CategoryName}' with {OperationCount} operations",
+            selectedCategory.Key.CategoryName, categoryOperations.Count);
 
         // Show operations in selected category
         while (true)
@@ -100,6 +135,7 @@ while (true)
             // Handle back to categories
             if (operationChoice == "← Back to Categories")
             {
+                Log.Debug("User chose to go back to categories from '{CategoryName}'", selectedCategory.Key.CategoryName);
                 AnsiConsole.Clear();
                 break;
             }
@@ -109,6 +145,9 @@ while (true)
             if (selectedOperationIndex < categoryOperations.Count)
             {
                 var selectedOperation = categoryOperations[selectedOperationIndex];
+                
+                Log.Information("User selected operation '{OperationName}' from category '{CategoryName}'",
+                    selectedOperation.Name, selectedCategory.Key.CategoryName);
 
                 try
                 {
@@ -126,14 +165,22 @@ while (true)
                         parameters.Add(param);
                     }
 
+                    Log.Debug("Executing operation '{OperationName}' with parameters: [{Parameters}]",
+                        selectedOperation.Name, string.Join(", ", parameters));
+
                     // Execute operation using the new Execute method
                     var result = selectedOperation.Execute(parameters.ToArray());
+
+                    Log.Information("Operation '{OperationName}' completed successfully with result: {Result}",
+                        selectedOperation.Name, result);
 
                     // Display result
                     AnsiConsole.MarkupLine($"[green]Result: {result}[/]");
                 }
                 catch (Exception ex)
                 {
+                    Log.Error(ex, "Operation '{OperationName}' failed with error: {ErrorMessage}",
+                        selectedOperation.Name, ex.Message);
                     AnsiConsole.MarkupLine($"[red]Error: {ex.Message}[/]");
                 }
 
@@ -145,4 +192,15 @@ while (true)
             }
         }
     }
+}
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Fatal error in MyCalc CLI application");
+    AnsiConsole.MarkupLine($"[red]Fatal error: {ex.Message}[/]");
+}
+finally
+{
+    Log.Information("MyCalc CLI application shutting down");
+    Log.CloseAndFlush();
 }
