@@ -32,8 +32,11 @@ jobs:
     - name: Run tests
       run: dotnet test --no-build --configuration Release --verbosity normal
       
+    - name: Restore for target runtime
+      run: dotnet restore --runtime ${{ matrix.runtime }}
+      
     - name: Publish CLI application
-      run: dotnet publish MyCalcCli/MyCalcCli.csproj --configuration Release --output ./publish-${{ matrix.runtime }} --no-build --self-contained true --runtime ${{ matrix.runtime }}
+      run: dotnet publish MyCalcCli/MyCalcCli.csproj --configuration Release --output ./publish-${{ matrix.runtime }} --self-contained true --runtime ${{ matrix.runtime }}
       
     - name: Create release artifacts
       run: |
