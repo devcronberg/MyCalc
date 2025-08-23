@@ -36,13 +36,26 @@ namespace MyCalcCore.Operations
                 throw new ArgumentException($"Method {Name} expects {ParameterCount} arguments, but {args.Length} were provided.");
             }
 
-            object? instance = null;
-            if (!_method.IsStatic)
+            try
             {
-                instance = Activator.CreateInstance(_type);
-            }
+                object? instance = null;
+                if (!_method.IsStatic)
+                {
+                    // For non-static methods, create instance
+                    instance = Activator.CreateInstance(_type);
+                }
 
-            return (decimal)_method.Invoke(instance, args.Cast<object>().ToArray())!;
+                return (decimal)_method.Invoke(instance, args.Cast<object>().ToArray())!;
+            }
+            catch (Exception ex)
+            {
+                // Unwrap reflection exceptions to show the actual error
+                if (ex is System.Reflection.TargetInvocationException tie && tie.InnerException != null)
+                {
+                    throw tie.InnerException;
+                }
+                throw;
+            }
         }
 
         public static List<Operation> GetOperations()
