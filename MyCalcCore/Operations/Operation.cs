@@ -1,5 +1,6 @@
 using System.Reflection;
 using MyCalcCore.Attributes;
+using Serilog;
 
 namespace MyCalcCore.Operations
 {
@@ -33,22 +34,45 @@ namespace MyCalcCore.Operations
         {
             if (args.Length != ParameterCount)
             {
-                throw new ArgumentException($"Method {Name} expects {ParameterCount} arguments, but {args.Length} were provided.");
+                var errorMessage = $"Method {Name} expects {ParameterCount} arguments, but {args.Length} were provided.";
+                Log.Error("Parameter count mismatch for operation {OperationName}: expected {ExpectedCount}, got {ActualCount}", 
+                    Name, ParameterCount, args.Length);
+                throw new ArgumentException(errorMessage);
             }
 
-            object? instance = null;
-            if (!_method.IsStatic)
+            try
             {
-                instance = Activator.CreateInstance(_type);
-            }
+                Log.Debug("Executing operation {OperationName} with arguments: [{Arguments}]", 
+                    Name, string.Join(", ", args));
 
-            return (decimal)_method.Invoke(instance, args.Cast<object>().ToArray())!;
+                object? instance = null;
+                if (!_method.IsStatic)
+                {
+                    instance = Activator.CreateInstance(_type);
+                    Log.Debug("Created instance of type {TypeName} for operation {OperationName}", 
+                        _type.Name, Name);
+                }
+
+                var result = (decimal)_method.Invoke(instance, args.Cast<object>().ToArray())!;
+                
+                Log.Debug("Operation {OperationName} executed successfully with result: {Result}", 
+                    Name, result);
+                
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error executing operation {OperationName}: {ErrorMessage}", Name, ex.Message);
+                throw;
+            }
         }
 
         public static List<Operation> GetOperations()
         {
             var operations = new List<Operation>();
             var assembly = Assembly.GetExecutingAssembly();
+            
+            Log.Debug("Starting operation discovery from assembly {AssemblyName}", assembly.FullName);
 
             foreach (var type in assembly.GetTypes())
             {
@@ -68,7 +92,7 @@ namespace MyCalcCore.Operations
                         if (method.ReturnType == typeof(decimal) &&
                             parameters.All(p => p.ParameterType == typeof(decimal)))
                         {
-                            operations.Add(new Operation(
+                            var operation = new Operation(
                                 discoverAttribute.Name,
                                 discoverAttribute.Description,
                                 discoverAttribute.ParameterDescriptions,
@@ -78,12 +102,23 @@ namespace MyCalcCore.Operations
                                 categorySortOrder,
                                 method,
                                 type
-                            ));
+                            );
+                            
+                            operations.Add(operation);
+                            
+                            Log.Debug("Discovered operation {OperationName} in category {CategoryName} with {ParameterCount} parameters", 
+                                discoverAttribute.Name, categoryName, parameters.Length);
+                        }
+                        else
+                        {
+                            Log.Warning("Skipping method {MethodName} in type {TypeName}: invalid signature (must return decimal and take only decimal parameters)", 
+                                method.Name, type.Name);
                         }
                     }
                 }
             }
 
+            Log.Information("Operation discovery completed. Found {OperationCount} operations", operations.Count);
             return operations;
         }
     }
