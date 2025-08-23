@@ -9,10 +9,53 @@ A modern .NET 8.0 console calculator application that automatically discovers ma
 - 🌍 **International Support** - Handles both `.` and `,` as decimal separators for different locales
 - 🎯 **Type Safety** - Uses `decimal` for financial-grade precision
 - 🖥️ **Beautiful CLI** - Interactive menus powered by Spectre.Console
+- 📋 **Structured Logging** - Comprehensive Serilog-based logging with configurable levels and output formats
 - ✅ **Comprehensive Tests** - Full test coverage with xUnit (42+ tests)
 - 🏗️ **Clean Architecture** - Layered design with Core/CLI/Tests separation
 - 🚀 **Cross-Platform Builds** - Automated builds for Windows, Linux, and macOS via GitHub Actions
 - 📦 **Release Automation** - Automatic artifact creation with platform-specific executables
+
+## Logging
+
+MyCalc includes comprehensive structured logging using Serilog:
+
+- **Console Output**: All logs are written to console with timestamp, level, and structured data
+- **Configurable Levels**: Information (default) and Debug levels available
+- **Log Configuration**: Fully configurable via `appsettings.json`
+- **Operation Tracking**: All calculations, user actions, and errors are logged
+- **Error Handling**: Structured error logging with full exception details
+
+### Log Output Format
+
+```
+[HH:mm:ss INF] Message with {StructuredData} {}
+[HH:mm:ss ERR] Error occurred: {ErrorMessage} {}
+System.Exception: Full exception details with stack trace
+```
+
+### Configuring Logging
+
+Edit `MyCalcCli/appsettings.json` to customize logging behavior:
+
+```json
+{
+  "Serilog": {
+    "MinimumLevel": {
+      "Default": "Information"
+    },
+    "WriteTo": [
+      {
+        "Name": "Console",
+        "Args": {
+          "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"
+        }
+      }
+    ]
+  }
+}
+```
+
+**Available Log Levels**: Debug, Information, Warning, Error, Fatal
 
 ## Getting Started
 
@@ -192,6 +235,7 @@ The GitHub Actions workflow automatically creates platform-specific builds:
 
 - **Framework**: .NET 8.0
 - **UI Library**: Spectre.Console for interactive menus
+- **Logging**: Serilog with structured logging and configurable output
 - **Testing**: xUnit with comprehensive test coverage
 - **Precision**: Uses `decimal` type for financial-grade accuracy
 - **Culture**: InvariantCulture for consistent worldwide behavior

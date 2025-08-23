@@ -22,6 +22,7 @@ This is a production-ready .NET 8.0 calculator solution with a layered architect
 
 - **Operation Discovery**: Uses `[Discover]` attribute with parameter descriptions and reflection-based execution
 - **Operation Categories**: Uses `[OperationCategory]` attribute for menu organization and sorting
+- **Structured Logging**: Serilog-based logging with Information/Debug levels and configurable output via appsettings.json
 - **Namespace Organization**: Each project uses its own namespace (`MyCalcCore`, `MyCalcCli`, `MyCalcTests`)
 - **Function Organization**: Mathematical functions in `MyCalcCore/Operations/` with category-based grouping
 - **Decimal Precision**: Uses `decimal` type with InvariantCulture for international compatibility
@@ -140,8 +141,18 @@ public class Statistics
 - Implicit usings enabled
 - xUnit 2.5.3 for testing with Theory/InlineData support
 - Spectre.Console 0.50.0 for interactive CLI menus
+- Serilog 4.3.0 for structured logging with console sink and configuration support
 - Custom reflection-based operation discovery system
 - GitHub Actions for automated cross-platform builds
+
+## Logging System
+- **Framework**: Serilog with console sink only (no files/remote sinks)
+- **Configuration**: `MyCalcCli/appsettings.json` - fully configurable log levels and output format
+- **Template**: `[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}`
+- **Levels**: Information (default minimum), Debug enabled for diagnostics
+- **Coverage**: Application lifecycle, user interactions, operation execution, error handling
+- **Error Handling**: Top-level exception handler logs unhandled exceptions at Fatal level
+- **Integration**: Both CLI and Core projects use structured logging for all operations
 
 ## CI/CD Pipeline Details
 - **Trigger**: Push to main branch or pull requests
