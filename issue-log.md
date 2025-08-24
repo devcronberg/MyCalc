@@ -5,7 +5,7 @@ Introduce structured logging using Serilog for both the CLI and Core projects, w
 
 ### Requirements
 - Integrate Serilog as the exclusive logging provider (do not use the Microsoft logging abstraction).
-- Apply logging to both the CLI and Core projects.
+- Apply logging to both the CLI and Core projects - in all operations.
 - Configure Serilog via `appsettings.json` (do not hard-code sinks or levels).
 - Enable output to the console sink only (plain text, template: `[{{Timestamp:HH:mm:ss}} {{Level:u3}}] {{Message:lj}} {{Properties:j}}{{NewLine}}{{Exception}}`).
 - Minimum log level: Information; also enable Debug-level logging for deeper diagnostics.
@@ -21,8 +21,12 @@ Introduce structured logging using Serilog for both the CLI and Core projects, w
 - No persistent/file/remote sinks for now.
 - No changes to test projects or test logging.
 
+### Branch
+
+Please name the branch `feature/logging-serilog`
+
 ### Acceptance Criteria
-- [ ] Serilog is integrated and initialized via `appsettings.json` in both CLI and Core projects.
+- [ ] Serilog is integrated and initialized via `appsettings.json` in the CLI  project.
 - [ ] Console output uses the specified template, with both Information and Debug levels working.
 - [ ] All error handling paths log at Error level with stack trace.
 - [ ] No ad-hoc logging remains.
