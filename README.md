@@ -1,6 +1,6 @@
 # MyCalc - .NET Calculator with Operation Discovery
 
-A modern .NET 8.0 console calculator application that automatically discovers mathematical operations through attributes and reflection, featuring an interactive menu system with categorized operations and cross-platform deployment automation.
+A modern .NET 8.0 console application that automatically discovers operations through attributes and reflection, featuring an interactive menu system with categorized operations and cross-platform deployment automation.
 
 ## Features
 
@@ -26,8 +26,8 @@ A modern .NET 8.0 console calculator application that automatically discovers ma
 
 ### Download Pre-built Releases
 
-1. Go to the [Releases](https://github.com/devcronberg/MyCalc/releases) page
-2. Download the appropriate package for your platform:
+1. Go to the [Actions](https://github.com/devcronberg/MyCalc/actions) page
+2. Find the latest workflow run and download the appropriate package for your platform:
    - `MyCalc-win-x64.zip` for Windows
    - `MyCalc-linux-x64.tar.gz` for Linux
    - `MyCalc-osx-x64.tar.gz` for macOS
