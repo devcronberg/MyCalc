@@ -28,6 +28,36 @@ This is a production-ready .NET 8.0 calculator solution with a layered architect
 - **Attributes System**: `MyCalcCore/Attributes/` contains discovery and categorization attributes
 - **Two-Level Menu**: Category selection → Operation selection → Parameter input
 - **International Input**: Handles both `.` and `,` decimal separators automatically
+- **Structured Logging**: Comprehensive Serilog-based logging throughout Core and CLI projects
+
+### Logging Guidelines
+
+**Logging Framework**: Serilog (configured via `appsettings.json`)
+
+**Logging Levels**:
+- **Information**: Application flow, user actions, operation completion
+- **Debug**: Detailed parameters, internal calculations, API responses
+- **Error**: Exceptions, failures, with full stack traces and context
+
+**Logging Patterns**:
+```csharp
+// In operation methods
+Log.Debug("Performing addition: {A} + {B}", a, b);
+Log.Information("Operation '{OperationName}' completed successfully with result: {Result}", name, result);
+
+// In error handling  
+Log.Error(ex, "Error executing operation '{OperationName}': {ErrorMessage}", name, ex.Message);
+
+// In discovery/initialization
+Log.Information("Discovered {OperationCount} operations across {CategoryCount} categories", 
+    operations.Count, categories.Count);
+```
+
+**Configuration**: 
+- Log levels configurable via `appsettings.json`
+- Console sink with structured template
+- Top-level exception handlers for unhandled exceptions
+- Namespace-specific overrides for detailed debugging
 
 ## Development Workflows
 
@@ -140,6 +170,10 @@ public class Statistics
 - Implicit usings enabled
 - xUnit 2.5.3 for testing with Theory/InlineData support
 - Spectre.Console 0.50.0 for interactive CLI menus
+- Serilog 4.1.0 for structured logging
+- Serilog.Settings.Configuration 8.0.4 for appsettings.json configuration
+- Serilog.Sinks.Console 6.0.0 for console output
+- Microsoft.Extensions.Configuration 9.0.8 for configuration management
 - Custom reflection-based operation discovery system
 - GitHub Actions for automated cross-platform builds
 
