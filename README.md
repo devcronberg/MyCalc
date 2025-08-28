@@ -13,6 +13,63 @@ A modern .NET 8.0 console application that automatically discovers operations th
 - 🏗️ **Clean Architecture** - Layered design with Core/CLI/Tests separation
 - 🚀 **Cross-Platform Builds** - Automated builds for Windows, Linux, and macOS via GitHub Actions
 - 📦 **Release Automation** - Automatic artifact creation with platform-specific executables
+- 📊 **Structured Logging** - Comprehensive Serilog-based logging with configurable levels
+
+## Logging
+
+MyCalc uses [Serilog](https://serilog.net/) for structured logging throughout the application:
+
+### Configuration
+
+Logging is configured via `appsettings.json` in the CLI project:
+
+```json
+{
+    "Serilog": {
+        "MinimumLevel": {
+            "Default": "Information",
+            "Override": {
+                "MyCalcCore": "Debug",
+                "MyCalcCli": "Debug"
+            }
+        },
+        "WriteTo": [
+            {
+                "Name": "Console",
+                "Args": {
+                    "outputTemplate": "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"
+                }
+            }
+        ]
+    }
+}
+```
+
+### Log Levels
+
+- **Information** - Application flow, operation execution, user actions
+- **Debug** - Detailed operation parameters, API responses, internal logic
+- **Error** - Exceptions, failed operations, network errors with full stack traces
+
+### Example Output
+
+```
+[16:15:30 INF] MyCalc application starting {}
+[16:15:30 INF] Operation discovery completed - found 8 operations across 3 categories {}
+[16:15:30 INF] User selected category: 'Basic Arithmetic - Fundamental mathematical operations' {}
+[16:15:31 INF] Executing operation 'Add' with 2 parameters {}
+[16:15:31 DBG] Performing addition: 5.5 + 3.2 {}
+[16:15:31 DBG] Addition result: 5.5 + 3.2 = 8.7 {}
+[16:15:31 INF] Operation 'Add' completed successfully with result: 8.7 {}
+```
+
+### Customizing Logging
+
+You can adjust logging behavior by modifying `appsettings.json`:
+
+- **Change log level**: Set `Default` to `"Debug"` for more verbose output
+- **Filter by namespace**: Use `Override` section to set different levels for specific components
+- **Modify output format**: Adjust the `outputTemplate` in the Console sink configuration
 
 ## Getting Started
 
