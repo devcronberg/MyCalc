@@ -9,7 +9,7 @@ A modern .NET 8.0 console application that automatically discovers operations th
 - 🌍 **International Support** - Handles both `.` and `,` as decimal separators for different locales
 - 🎯 **Type Safety** - Uses `decimal` for financial-grade precision
 - 🖥️ **Beautiful CLI** - Interactive menus powered by Spectre.Console
-- ✅ **Comprehensive Tests** - Full test coverage with xUnit (42+ tests)
+- ✅ **Comprehensive Tests** - Full test coverage with xUnit (44 tests)
 - 🏗️ **Clean Architecture** - Layered design with Core/CLI/Tests separation
 - 🚀 **Cross-Platform Builds** - Automated builds for Windows, Linux, and macOS via GitHub Actions
 - 📦 **Release Automation** - Automatic artifact creation with platform-specific executables
@@ -75,7 +75,7 @@ MyCalc/
 │       └── AdvancedArithmetic.cs
 ├── MyCalcCli/              # Console application with interactive menu
 │   └── Program.cs
-├── MyCalcTests/            # Unit tests (42+ comprehensive tests)
+├── MyCalcTests/            # Unit tests (44 comprehensive tests)
 │   ├── BasicArithmeticTests.cs
 │   └── AdvancedArithmeticTests.cs
 ├── .github/                # GitHub Actions workflow
@@ -89,7 +89,7 @@ MyCalc/
 
 The project includes a comprehensive GitHub Actions workflow that:
 
-- ✅ **Quality Gates** - All 42+ tests must pass before any builds are created
+- ✅ **Quality Gates** - All 44 tests must pass before any builds are created
 - 🔨 **Cross-Platform Builds** - Automatically builds for Windows, Linux, and macOS
 - 📦 **Artifact Creation** - Creates platform-specific packages with:
   - Self-contained executables (no .NET runtime required)
@@ -163,6 +163,10 @@ The operation automatically appears in the menu - no CLI changes needed!
 ### Advanced Math (Category 2)
 - **Square** - Calculates the square of a number
 
+### Financial (Category 4)
+- **Bitcoin Price** - Gets current Bitcoin price in USD from CoinGecko API
+- **Ethereum Price** - Gets current Ethereum price in USD from CoinGecko API
+
 *Operations are automatically sorted by category priority and displayed in interactive submenus*
 
 ## Build & Deployment
@@ -172,7 +176,7 @@ The operation automatically appears in the menu - no CLI changes needed!
 # Build entire solution
 dotnet build --configuration Release
 
-# Run all 42+ tests
+# Run all 44 tests
 dotnet test
 
 # Run the application
@@ -185,7 +189,7 @@ The GitHub Actions workflow automatically creates platform-specific builds:
 ```yaml
 # Builds for: win-x64, linux-x64, osx-x64
 # Includes: Self-contained executable, launcher scripts, documentation
-# Quality gate: All tests must pass before builds are created
+# Quality gate: All 44 tests must pass before builds are created
 ```
 
 ## Technical Details
@@ -213,14 +217,14 @@ The GitHub Actions workflow automatically creates platform-specific builds:
 - **Shell**: PowerShell (note: use `;` instead of `&&` for command chaining)
 - **Culture**: Uses InvariantCulture to ensure consistent decimal parsing worldwide
 - **CI/CD**: GitHub Actions with cross-platform matrix builds
-- **Testing**: 42+ comprehensive unit tests with Theory/InlineData patterns
+- **Testing**: 44 comprehensive unit tests with Theory/InlineData patterns
 
 ## Contributing
 
 1. Fork the repository
 2. Add new operation methods with proper `[Discover]` attributes
 3. Include comprehensive unit tests following existing patterns
-4. Ensure all 42+ tests pass locally (`dotnet test`)
+4. Ensure all 44 tests pass locally (`dotnet test`)
 5. Follow the existing naming patterns and architectural principles
 6. Test with both `.` and `,` decimal separators for international compatibility
 7. Submit a pull request - GitHub Actions will automatically validate your changes

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace MyCalcCore.Operations;
 
-[OperationCategory("Financial", "Financial calculations and cryptocurrency prices", 4)]
+[OperationCategory("Financial", "Financial prices and calculations", 4)]
 public class Financial
 {
     private static readonly HttpClient _httpClient = new HttpClient();
@@ -41,24 +41,6 @@ public class Financial
     public static decimal GetEthereumPrice()
     {
         return GetCryptoPrice("ethereum");
-    }
-
-    [Discover("Cardano Price", "Gets current Cardano (ADA) price in USD")]
-    public static decimal GetCardanoPrice()
-    {
-        return GetCryptoPrice("cardano");
-    }
-
-    [Discover("Solana Price", "Gets current Solana price in USD")]
-    public static decimal GetSolanaPrice()
-    {
-        return GetCryptoPrice("solana");
-    }
-
-    [Discover("Polygon Price", "Gets current Polygon (MATIC) price in USD")]
-    public static decimal GetPolygonPrice()
-    {
-        return GetCryptoPrice("matic-network");
     }
 
     private static decimal GetCryptoPrice(string cryptoId)

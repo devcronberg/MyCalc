@@ -27,39 +27,6 @@ public class FinancialTests
         Assert.True(result < 100000, "Ethereum price should be reasonable (less than $100K)");
     }
 
-    [Fact]
-    public void GetCardanoPrice_ReturnsPositiveValue()
-    {
-        // Act - This will make actual API call
-        var result = Financial.GetCardanoPrice();
-
-        // Assert
-        Assert.True(result > 0, "Cardano price should be positive");
-        Assert.True(result < 100, "Cardano price should be reasonable (less than $100)");
-    }
-
-    [Fact]
-    public void GetSolanaPrice_ReturnsPositiveValue()
-    {
-        // Act - This will make actual API call
-        var result = Financial.GetSolanaPrice();
-
-        // Assert
-        Assert.True(result > 0, "Solana price should be positive");
-        Assert.True(result < 10000, "Solana price should be reasonable (less than $10K)");
-    }
-
-    [Fact]
-    public void GetPolygonPrice_ReturnsPositiveValue()
-    {
-        // Act - This will make actual API call
-        var result = Financial.GetPolygonPrice();
-
-        // Assert
-        Assert.True(result > 0, "Polygon price should be positive");
-        Assert.True(result < 100, "Polygon price should be reasonable (less than $100)");
-    }
-
     // Note: These tests make actual HTTP calls to CoinGecko API
     // The methods are now static, so no constructor testing needed
     // In a production environment, consider:
