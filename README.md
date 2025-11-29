@@ -234,3 +234,105 @@ The GitHub Actions workflow automatically creates platform-specific builds:
 ## License
 
 This project is open source and available under the MIT License.
+
+## Examples of prompting AI for help
+
+### Upgrade to .NET 10
+
+```markdown
+# Upgrade the project to .NET 10
+
+## Overview
+Upgrade the entire MyCalc solution to target .NET 10, ensuring all three projects (MyCalcCore, MyCalcCli, MyCalcTests), dependencies, GitHub Actions workflow, and documentation are updated accordingly. Verify that the application builds, all 44 tests pass, and runs correctly after the upgrade.
+
+## Requirements
+- Update all `.csproj` files in MyCalcCore, MyCalcCli, and MyCalcTests to target `net10.0`.
+- Review and update all NuGet package versions to their latest .NET 10-compatible versions:
+  - Spectre.Console (currently 0.50.0)
+  - xUnit and related test packages (currently 2.5.3)
+  - Microsoft.Extensions.Configuration packages
+  - Microsoft.NET.Test.Sdk
+- Update `.github/workflows/build-and-release.yml` to use .NET 10 SDK (`dotnet-version: '10.0.x'`).
+- Update all documentation references from ".NET 8.0" to ".NET 10":
+  - README.md (multiple locations)
+  - .github/copilot-instructions.md
+  - Any other markdown files
+- Verify all 44 tests pass after upgrade.
+- Test the interactive CLI menu system to ensure compatibility.
+- Use the branch naming convention: `feature/upgrade-dotnet10`.
+
+## Out of Scope
+- No changes to application functionality, features, or operation logic.
+- No changes to test coverage or test implementation beyond compatibility fixes.
+- No UI/UX changes to the Spectre.Console menu system.
+
+## Branch
+Please name the branch `feature/upgrade-dotnet10`
+
+## Acceptance Criteria
+- [ ] All three `.csproj` files target `net10.0`.
+- [ ] All NuGet packages are updated to .NET 10-compatible versions.
+- [ ] GitHub Actions workflow uses .NET 10 SDK.
+- [ ] All documentation updated to reference .NET 10.
+- [ ] Solution builds successfully with `dotnet build`.
+- [ ] All 44 tests pass with `dotnet test`.
+- [ ] Application runs successfully with `dotnet run --project MyCalcCli`.
+- [ ] Interactive menu system works correctly.
+- [ ] Cross-platform builds succeed in GitHub Actions.
+- [ ] Changes are committed to the `feature/upgrade-dotnet10` branch.
+
+## Testing Steps
+1. Run `dotnet build` - should succeed
+2. Run `dotnet test` - all 44 tests should pass
+3. Run `.\run.ps1` - CLI should launch and operate normally
+4. Test both Bitcoin and Ethereum price operations
+5. Test Basic Arithmetic and Advanced Math operations
+6. Verify international decimal input (both `.` and `,`)
+
+## References
+- [.NET 10 Release Notes](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-10)
+- [Breaking changes in .NET 10](https://learn.microsoft.com/en-us/dotnet/core/compatibility/10.0)
+```
+
+### Structured Logging with Serilog
+
+```
+# Implement Serilog-based structured logging in CLI and Core projects
+
+## Overview
+Introduce structured logging using Serilog for both the CLI and Core projects, with output to the console and configuration via `appsettings.json`. Replace any ad-hoc logging with Serilog and ensure all relevant operations and error handling are logged at information, debug, or error levels as appropriate.
+
+## Requirements
+- Integrate Serilog as the exclusive logging provider (do not use the Microsoft logging abstraction).
+- Apply logging to both the CLI and Core projects - in all operations.
+- Configure Serilog via `appsettings.json` (do not hard-code sinks or levels).
+- Enable output to the console sink only (plain text, template: `[{{Timestamp:HH:mm:ss}} {{Level:u3}}] {{Message:lj}} {{Properties:j}}{{NewLine}}{{Exception}}`).
+- Minimum log level: Information; also enable Debug-level logging for deeper diagnostics.
+- Log all "normal" operations at Information or Debug level as appropriate.
+- Log all error/exception scenarios at Error level, with stack trace.
+- Add a top-level error handler to capture and log unhandled exceptions.
+- Remove or replace any existing Console.WriteLine or alternative logging statements in the CLI and Core code.
+- Ensure logging configuration can be changed via `appsettings.json` (e.g., log level override).
+- Update documentation in both `README.md` and `copilot-instructions.md` to reflect logging usage and how to configure it.
+- Use the branch naming convention: `feature/logging-serilog` or similar.
+
+## Out of Scope
+- No persistent/file/remote sinks for now.
+- No changes to test projects or test logging.
+
+## Branch
+
+Please name the branch `feature/logging-serilog`
+
+## Acceptance Criteria
+- [ ] Serilog is integrated and initialized via `appsettings.json` in the CLI  project.
+- [ ] Console output uses the specified template, with both Information and Debug levels working.
+- [ ] All error handling paths log at Error level with stack trace.
+- [ ] No ad-hoc logging remains.
+- [ ] Documentation updated in both `README.md` and `copilot-instructions.md`.
+- [ ] Implementation is committed using the `feature/logging-serilog` branch.
+
+## References
+- [Serilog Documentation](https://serilog.net/)
+- [Serilog Console Sink](https://github.com/serilog/serilog-sinks-console)
+```
