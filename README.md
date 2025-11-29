@@ -1,6 +1,6 @@
 # MyCalc - .NET Calculator with Operation Discovery
 
-A modern .NET 8.0 console application that automatically discovers operations through attributes and reflection, featuring an interactive menu system with categorized operations and cross-platform deployment automation.
+A modern .NET 10 console application that automatically discovers operations through attributes and reflection, featuring an interactive menu system with categorized operations and cross-platform deployment automation.
 
 ## Features
 
@@ -37,7 +37,7 @@ A modern .NET 8.0 console application that automatically discovers operations th
 
 ### Prerequisites (for development)
 
-- .NET 8.0 SDK
+- .NET 10 SDK
 - Windows with PowerShell (primary development environment)
 
 ### Quick Start
@@ -194,7 +194,7 @@ The GitHub Actions workflow automatically creates platform-specific builds:
 
 ## Technical Details
 
-- **Framework**: .NET 8.0
+- **Framework**: .NET 10
 - **UI Library**: Spectre.Console for interactive menus
 - **Testing**: xUnit with comprehensive test coverage
 - **Precision**: Uses `decimal` type for financial-grade accuracy

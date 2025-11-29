@@ -6,13 +6,13 @@ This is a complete .NET CLI calculator application with attribute-driven operati
 
 - **IDE**: Visual Studio Code on Windows
 - **Shell**: PowerShell (Windows) - Note: Use `;` instead of `&&` for command chaining
-- **Framework**: .NET 8.0
+- **Framework**: .NET 10
 - **CI/CD**: GitHub Actions with cross-platform matrix builds
 - **Quality Gates**: All 42+ tests must pass before builds are created
 
 ## Project Architecture
 
-This is a production-ready .NET 8.0 calculator solution with a layered architecture:
+This is a production-ready .NET 10 calculator solution with a layered architecture:
 - **MyCalcCore**: Core business logic library with operation discovery engine
 - **MyCalcCli**: Console application with Spectre.Console categorized menu system
 - **MyCalcTests**: Comprehensive xUnit test suite (42+ tests)
@@ -135,7 +135,7 @@ public class Statistics
 - Current test count: 42+ comprehensive tests covering all operations
 
 ## Dependencies
-- .NET 8.0 target framework
+- .NET 10 target framework
 - Nullable reference types enabled
 - Implicit usings enabled
 - xUnit 2.5.3 for testing with Theory/InlineData support
