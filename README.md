@@ -336,3 +336,144 @@ Please name the branch `feature/logging-serilog`
 - [Serilog Documentation](https://serilog.net/)
 - [Serilog Console Sink](https://github.com/serilog/serilog-sinks-console)
 ```
+
+### Add Multiply and Divide Operations
+
+```markdown
+# Add Multiply and Divide operations to Basic Arithmetic with comprehensive tests
+
+## Overview
+Add `Multiply` and `Divide` methods to the `BasicArithmetic` class in MyCalcCore with `[Discover]` attributes, ensuring they automatically appear in the CLI menu. Include comprehensive unit tests following the exact same patterns used in the existing `BasicArithmeticTests.cs` file.
+
+## Requirements
+- Add two new methods to `MyCalcCore/Operations/BasicArithmetic.cs`:
+  - `Multiply(decimal a, decimal b)` - Multiplies two decimal numbers
+  - `Divide(decimal a, decimal b)` - Divides first number by second number
+- Use `[Discover]` attributes with descriptive parameters matching existing pattern.
+- Methods should return `decimal` type for consistency.
+- Add comprehensive tests to `MyCalcTests/BasicArithmeticTests.cs`:
+  - Follow the **exact same test patterns** as existing Add and Subtract tests
+  - Use `[Theory]` with `[InlineData]` for parameterized tests (10+ test cases each)
+  - Use `[Fact]` for specific edge case tests
+  - Follow naming pattern: `MethodName_Scenario_ExpectedResult`
+  - Include similar edge cases as Add/Subtract: positive, negative, zero, decimals, large numbers
+  - For Divide: Include division by zero test (should throw exception)
+- Ensure all tests pass (target: 64+ tests total, currently 44).
+- No CLI changes needed - operations will be auto-discovered.
+- Use branch naming convention: `feature/multiply-divide-operations`.
+
+## Implementation Guidelines
+- **Study existing code**: Review `Add` and `Subtract` methods in `BasicArithmetic.cs` for implementation pattern
+- **Study existing tests**: Review all Add and Subtract tests in `BasicArithmeticTests.cs` and replicate the exact same patterns
+- **Follow conventions**: Use same naming, structure, and Assert patterns as existing tests
+- **Edge cases**: Cover similar scenarios as existing tests (positive, negative, zero, decimals, large numbers)
+- **Division by zero**: Handle appropriately with exception
+
+## Out of Scope
+- No changes to other operations or operation classes.
+- No changes to CLI, menu system, or Program.cs.
+- No changes to other test files (AdvancedArithmeticTests.cs, FinancialTests.cs).
+- No changes to project structure or configuration.
+
+## Branch
+Please name the branch `feature/multiply-divide-operations`
+
+## Acceptance Criteria
+- [ ] Both `Multiply` and `Divide` methods added to `BasicArithmetic.cs` with correct `[Discover]` attributes.
+- [ ] Methods return `decimal` and accept two `decimal` parameters.
+- [ ] Divide method includes zero-check with appropriate exception.
+- [ ] 20+ comprehensive unit tests added (10+ for each operation) to `BasicArithmeticTests.cs`.
+- [ ] Tests follow **exact same patterns** as existing Add/Subtract tests.
+- [ ] All edge cases covered including division by zero exception test.
+- [ ] Solution builds successfully with `dotnet build`.
+- [ ] All tests pass (64+ total tests expected: 44 existing + ~20 new).
+- [ ] Both operations appear automatically in CLI menu under "Basic Arithmetic".
+- [ ] Manual testing confirms correct behavior for both operations.
+- [ ] Division by zero is properly handled with exception.
+- [ ] Changes committed to `feature/multiply-divide-operations` branch.
+
+## Testing Steps
+1. Run `dotnet build` - should succeed
+2. Run `dotnet test` - should show 64+ tests passing
+3. Run `.\run.ps1` and navigate to Basic Arithmetic category
+4. Verify "Multiply" and "Divide" appear in the operation list
+5. Test multiplication with various inputs (positive, negative, decimals)
+6. Test division with various inputs including edge cases
+7. Verify division by zero shows appropriate error message
+8. Test with both `.` and `,` as decimal separators
+
+## References
+- **PRIMARY**: Study existing test patterns in `MyCalcTests/BasicArithmeticTests.cs`
+- Existing `Add` and `Subtract` methods in `MyCalcCore/Operations/BasicArithmetic.cs`
+- Current test count: 44 tests (all passing)
+```
+
+### Implement Meziantou.Analyzer
+
+```markdown
+# Implement Meziantou.Analyzer for code quality
+
+## Overview
+Integrate Meziantou.Analyzer (https://github.com/meziantou/Meziantou.Analyzer) into the MyCalc solution to enforce code quality standards and best practices. Ensure that MyCalcCore and MyCalcCli projects build without any analyzer warnings.
+
+## Requirements
+- Add Meziantou.Analyzer NuGet package to MyCalcCore and MyCalcCli projects (latest version).
+- Do NOT add the analyzer to MyCalcTests project.
+- Configure analyzer settings appropriately (use `.editorconfig` or project properties).
+- Fix all analyzer warnings in MyCalcCore and MyCalcCli projects:
+  - Review each warning and fix according to best practices
+  - Suppress warnings only if absolutely necessary with proper justification
+  - Maintain existing functionality while improving code quality
+- Ensure all 44 existing tests still pass after code changes.
+- Build should complete with zero warnings from Meziantou.Analyzer.
+- Use branch naming convention: `feature/meziantou-analyzer`.
+
+## Implementation Guidelines
+- Add the NuGet package to both MyCalcCore and MyCalcCli `.csproj` files
+- Run `dotnet build` and review all analyzer warnings
+- Fix warnings systematically, testing after each change
+- Common areas to address:
+  - Async/await patterns
+  - Disposal patterns (IDisposable)
+  - String handling and culture specifications
+  - Exception handling best practices
+  - Naming conventions
+  - Performance optimizations
+- If suppression is needed, use `#pragma warning disable` with a comment explaining why
+
+## Out of Scope
+- No analyzer for test projects (MyCalcTests).
+- No changes to application functionality or features.
+- No breaking changes to public APIs or operation signatures.
+
+## Branch
+Please name the branch `feature/meziantou-analyzer`
+
+## Acceptance Criteria
+- [ ] Meziantou.Analyzer NuGet package added to MyCalcCore and MyCalcCli projects.
+- [ ] Package version documented in acceptance criteria or commit message.
+- [ ] Both MyCalcCore and MyCalcCli build with **zero warnings** from the analyzer.
+- [ ] All 44 existing tests pass without modification (unless required by analyzer fixes).
+- [ ] Code improvements maintain backward compatibility.
+- [ ] Solution builds successfully with `dotnet build`.
+- [ ] `dotnet build` output shows no analyzer warnings.
+- [ ] Application runs correctly with `dotnet run --project MyCalcCli`.
+- [ ] No functionality regressions in CLI or operations.
+- [ ] Changes committed to `feature/meziantou-analyzer` branch.
+
+## Testing Steps
+1. Add Meziantou.Analyzer package to both projects
+2. Run `dotnet build` and note all warnings
+3. Fix warnings one by one, running `dotnet build` after each fix
+4. Run `dotnet test` to ensure all 44 tests still pass
+5. Run `.\run.ps1` and manually test all operations
+6. Final `dotnet build` should show zero analyzer warnings
+7. Verify Bitcoin and Ethereum price operations work
+8. Verify Basic Arithmetic and Advanced Math operations work
+
+## References
+- [Meziantou.Analyzer GitHub](https://github.com/meziantou/Meziantou.Analyzer)
+- [Meziantou.Analyzer Rules Documentation](https://github.com/meziantou/Meziantou.Analyzer/tree/main/docs)
+- Current solution structure: MyCalcCore, MyCalcCli (targets for analyzer)
+- All tests remain passing
+```
