@@ -122,9 +122,9 @@ public class Financial
     {
         var data = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, decimal>>>(response);
 
-        if (data != null && data.ContainsKey(cryptoId) && data[cryptoId].ContainsKey("usd"))
+        if (data != null && data.TryGetValue(cryptoId, out var cryptoData) && cryptoData.TryGetValue("usd", out var price))
         {
-            return data[cryptoId]["usd"];
+            return price;
         }
 
         throw new InvalidOperationException($"Unable to get price for {cryptoId} - invalid response structure");
