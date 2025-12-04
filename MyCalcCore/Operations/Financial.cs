@@ -52,30 +52,9 @@ public class Financial
         {
             try
             {
-                var url = $"{_coinGeckoBaseUrl}?ids={cryptoId}&vs_currencies=usd";
-
-                // Add progressive delays to respect rate limits
-                if (retryCount > 0)
-                {
-                    var delayMs = 5000 * retryCount; // 5s, 10s progression
-                    Thread.Sleep(delayMs);
-                }
-                else
-                {
-                    // Always wait at least 1 second between any API calls
-                    Thread.Sleep(1000);
-                }
-
-                var response = _httpClient.GetStringAsync(url).GetAwaiter().GetResult();
-
-                var data = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, decimal>>>(response);
-
-                if (data != null && data.ContainsKey(cryptoId) && data[cryptoId].ContainsKey("usd"))
-                {
-                    return data[cryptoId]["usd"];
-                }
-
-                throw new InvalidOperationException($"Unable to get price for {cryptoId} - invalid response structure");
+                ApplyRateLimitDelay(retryCount);
+                var response = FetchCryptoPriceFromApi(cryptoId);
+                return ParseCryptoPriceResponse(cryptoId, response);
             }
             catch (HttpRequestException ex) when (ex.Message.Contains("429") || ex.Message.Contains("Too Many Requests"))
             {
@@ -117,5 +96,37 @@ public class Financial
         }
 
         throw new InvalidOperationException($"Failed to get {cryptoId} price after {maxRetries + 1} attempts due to rate limiting");
+    }
+
+    private static void ApplyRateLimitDelay(int retryCount)
+    {
+        if (retryCount > 0)
+        {
+            var delayMs = 5000 * retryCount; // 5s, 10s progression
+            Thread.Sleep(delayMs);
+        }
+        else
+        {
+            // Always wait at least 1 second between any API calls
+            Thread.Sleep(1000);
+        }
+    }
+
+    private static string FetchCryptoPriceFromApi(string cryptoId)
+    {
+        var url = $"{_coinGeckoBaseUrl}?ids={cryptoId}&vs_currencies=usd";
+        return _httpClient.GetStringAsync(url).GetAwaiter().GetResult();
+    }
+
+    private static decimal ParseCryptoPriceResponse(string cryptoId, string response)
+    {
+        var data = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, decimal>>>(response);
+
+        if (data != null && data.TryGetValue(cryptoId, out var cryptoData) && cryptoData.TryGetValue("usd", out var price))
+        {
+            return price;
+        }
+
+        throw new InvalidOperationException($"Unable to get price for {cryptoId} - invalid response structure");
     }
 }

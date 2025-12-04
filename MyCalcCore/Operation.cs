@@ -16,9 +16,9 @@ namespace MyCalcCore
             Delegate = @delegate;
         }
 
-        public static List<Operation> GetOperations()
+        public static IList<Operation> GetOperations()
         {
-            var operations = new List<Operation>();
+            IList<Operation> operations = new List<Operation>();
             var assembly = Assembly.GetExecutingAssembly();
 
             foreach (var type in assembly.GetTypes())
@@ -59,7 +59,7 @@ namespace MyCalcCore
             {
                 if (args.Length != parameters.Length)
                 {
-                    throw new ArgumentException($"Method {method.Name} expects {parameters.Length} arguments, but {args.Length} were provided.");
+                    throw new ArgumentException($"Method {method.Name} expects {parameters.Length} arguments, but {args.Length} were provided.", nameof(args));
                 }
 
                 object? instance = null;
