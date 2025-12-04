@@ -33,7 +33,7 @@ namespace MyCalcCore.Operations
         {
             if (args.Length != ParameterCount)
             {
-                throw new ArgumentException($"Method {Name} expects {ParameterCount} arguments, but {args.Length} were provided.");
+                throw new ArgumentException($"Method {Name} expects {ParameterCount} arguments, but {args.Length} were provided.", nameof(args));
             }
 
             try
@@ -58,9 +58,9 @@ namespace MyCalcCore.Operations
             }
         }
 
-        public static List<Operation> GetOperations()
+        public static IList<Operation> GetOperations()
         {
-            var operations = new List<Operation>();
+            IList<Operation> operations = new List<Operation>();
             var assembly = Assembly.GetExecutingAssembly();
 
             foreach (var type in assembly.GetTypes())

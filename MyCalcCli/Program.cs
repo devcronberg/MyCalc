@@ -37,7 +37,7 @@ while (true)
     var categories = operations
         .GroupBy(op => new { op.CategoryName, op.CategoryDescription, op.CategorySortOrder })
         .OrderBy(g => g.Key.CategorySortOrder)
-        .ThenBy(g => g.Key.CategoryName)
+        .ThenBy(g => g.Key.CategoryName, StringComparer.Ordinal)
         .ToList();
 
     // Create category menu choices
@@ -59,7 +59,7 @@ while (true)
             .AddChoices(categoryChoices));
 
     // Handle exit
-    if (categoryChoice == "Exit")
+    if (string.Equals(categoryChoice, "Exit", StringComparison.Ordinal))
     {
         AnsiConsole.MarkupLine("[green]Goodbye![/]");
         break;
@@ -98,7 +98,7 @@ while (true)
                     .AddChoices(operationChoices));
 
             // Handle back to categories
-            if (operationChoice == "← Back to Categories")
+            if (string.Equals(operationChoice, "← Back to Categories", StringComparison.Ordinal))
             {
                 AnsiConsole.Clear();
                 break;
